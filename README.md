@@ -1,5 +1,5 @@
 # ECL
-This repository is an implementation of NeurIPS2025 paper ["Learning by Exclusion: Contrapositive Learning for
+This repository is an implementation of NeurIPS2025 paper ["Learning by Exclusion: Evidential Contrapositive Learning for
 Zero-Shot Out-of-Distribution Detection"]
 
 ## Datasets
