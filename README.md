@@ -1,5 +1,6 @@
-# ZOC
-This repository is an implementation of AAAI2022 paper ["Zero-Shot Out-of-Distribution Detection Based on the Pre-trained Model CLIP"](https://arxiv.org/pdf/2109.02748.pdf)
+# ECL
+This repository is an implementation of NeurIPS2025 paper ["Learning by Exclusion: Contrapositive Learning for
+Zero-Shot Out-of-Distribution Detection"]
 
 ## Datasets
 cifar10, cifar100 and cifarplus are available in torchvision datasets. Tinyimagenet can be downloaded by running 
