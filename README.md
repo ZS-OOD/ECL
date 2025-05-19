@@ -1,7 +1,7 @@
  
 #  Learning by Exclusion: Evidential Contrapositive Learning for Zero-Shot Out-of-Distribution Detection
 
-This is the offical repository for our [ECL](https://drive.google.com/file/d/1kAe3RQdOr-ViR3xwTSccnzxVYvYNUeGv/view?usp=sharing)
+This is the offical repository for our [ECL]
 
 
 ### Illustration
