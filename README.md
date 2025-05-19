@@ -1,16 +1,16 @@
  
-#  TAG: Text Prompt Augmentation for Zero-Shot Out-of-Distribution Detection
+#  Learning by Exclusion: Evidential Contrapositive Learning for Zero-Shot Out-of-Distribution Detection
 
-This is the offical repository for our [TAG](https://drive.google.com/file/d/1kAe3RQdOr-ViR3xwTSccnzxVYvYNUeGv/view?usp=sharing) and the presentation can be found [here](https://youtu.be/LMr6oOOCz9Q?si=MDfUTmqJe_sChNLs).
+This is the offical repository for our [ECL](https://drive.google.com/file/d/1kAe3RQdOr-ViR3xwTSccnzxVYvYNUeGv/view?usp=sharing)
 
 
 ### Illustration
 
-![Arch_figure](teaser.png)
+![Arch_figure](NeurIPS_2025_ECL.png)
 
 ## Data Preparation
 
-We consider the following (in-distribution) datasets: CIFAR-100, ImageNet-100, and ImageNet-1k. 
+We consider the following (in-distribution) datasets: CIFAR-10, CIFAR-100
 
 **Small-scale OOD datasets** For small-scale ID (e.g. CIFAR-100), we use SVHN, Textures (dtd), Places365, LSUN and iSUN. 
 
@@ -50,16 +50,6 @@ OOD datasets can be downloaded via the following links (source: [ATOM](https://g
     ```
 
 
-## Citation
-
-```
-@inproceedings{Liu2024TAG,
-title = {TAG: Text Prompt Augmentation for Zero-Shot Out-of-Distribution Detection},
-author = {Liu, Xixi and Christopher, Zach},
-booktitle = {European Conference on Computer Vision},
-year = {2024}
-}
-```
 
 ## Acknowledgement
 
