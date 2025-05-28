@@ -84,10 +84,7 @@ def set_ood_dataset_cifar_100(out_dataset, transform):
     root = "~/datasets/small_OOD_dataset"
 
     if out_dataset == 'SVHN':
-        testsetout = SVHN(root=os.path.join(root, 'svhn'), split='test', transform=transform,download=True)
-                                
-    elif out_dataset == 'texture':
-        testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'texture', 'images'), transform=transform)     
+        testsetout = SVHN(root=os.path.join(root, 'svhn'), split='test', transform=transform,download=True)        
     else:
         testsetout = torchvision.datasets.ImageFolder(root = os.path.join(root, out_dataset), transform=transform)
     return testsetout
@@ -97,10 +94,7 @@ def set_ood_dataset_cifar_10(out_dataset, transform):
     root = "~/datasets/small_OOD_dataset"
 
     if out_dataset == 'SVHN':
-        testsetout = SVHN(root=os.path.join(root, 'svhn'), split='test', transform=transform,download=True)
-                                
-    elif out_dataset == 'texture':
-        testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'texture', 'images'), transform=transform)    
+        testsetout = SVHN(root=os.path.join(root, 'svhn'), split='test', transform=transform,download=True)     
     else:
         testsetout = torchvision.datasets.ImageFolder(root = os.path.join(root, out_dataset), transform=transform)
     return testsetout
@@ -113,63 +107,69 @@ def get_text_features(shuffled_text_inputs, M=1):
                 features = model.encode_text(shuffled_text_inputs[m].to(device))
                 all_features.append(features)
     return  all_features
-
 # # calculate ID score 
 def calculate_score(img_feature, all_shuffled_text_feature, M, score_name="MSP"):
-
     img_feature /= img_feature.norm(dim=-1, keepdim=True)
-    all_sorted_probability =[]
-    all_sorted_logit =[]
+    all_sorted_probability = []
+    all_sorted_logit = []
 
     for m in range(M):
         text_features = all_shuffled_text_feature[m]
         text_features /= text_features.norm(dim=-1, keepdim=True)
-        logit =   img_feature @ text_features.T/temp
+        logit = img_feature @ text_features.T / temp
         probability = logit.softmax(dim=-1)
-         
-        sorted_logit= torch.sort(logit, descending=True).values
+        
+        sorted_logit = torch.sort(logit, descending=True).values
         sorted_probability = torch.sort(probability, descending=True).values
         all_sorted_probability.append(sorted_probability)
         all_sorted_logit.append(sorted_logit)
-    # average probability
+
     total_score = 0
-    if score_name =="MSP":
 
+    if score_name == "MSP":
         for m in range(M):
-            score = all_sorted_probability[m][:,0]
+            score = all_sorted_probability[m][:, 0]
             total_score += score
-        total_score = total_score/M
-      
-    elif score_name =="Max-Logit":
-        
-        for m in range(M):
-            score = all_sorted_logit[m][:,0]
-            total_score += score
-        total_score = total_score/M
-         
-    elif score_name =="Energy":
+        total_score = total_score / M
 
+    elif score_name == "Max-Logit":
         for m in range(M):
-            score  =  torch.logsumexp(all_sorted_logit[m],1)
+            score = all_sorted_logit[m][:, 0]
             total_score += score
-        total_score = total_score/M
-    
-    elif score_name =="GEN":
+        total_score = total_score / M
+
+    elif score_name == "Energy":
+        for m in range(M):
+            score = torch.logsumexp(all_sorted_logit[m], 1)
+            total_score += score
+        total_score = total_score / M
+
+    elif score_name == "GEN":
         gamma = 0.1
         top_M = 100
-        
         for m in range(M):
-            probs = all_sorted_probability[m][:,:top_M]
-            score = torch.sum(probs**gamma * (1 - probs)**(gamma), axis=1)
+            probs = all_sorted_probability[m][:, :top_M]
+            score = torch.sum(probs**gamma * (1 - probs)**gamma, axis=1)
             total_score += -score
-        total_score = total_score/M
-    else: 
-        
-        assert("score name is incorrect")
-    
+        total_score = total_score / M
+
+    elif score_name == "ECL":
+        for m in range(M):
+            logit = all_sorted_logit[m]
+            evidence = torch.relu(logit)  # Optionally use softplus
+            alpha = evidence + 1
+            S = torch.sum(alpha, dim=1, keepdim=True)
+            probs = alpha / S
+            # Compute confidence score as negative epistemic uncertainty
+            epistemic = torch.sum((probs - probs.mean(dim=1, keepdim=True))**2, dim=1)
+            score = -epistemic  # Lower uncertainty => higher score
+            total_score += score
+        total_score = total_score / M
+
+    else:
+        raise ValueError("Score name is incorrect")
+
     return total_score.cpu().numpy()
-
-
 
 def shuffle_prompt(prompt, class_name):
     # Tokenize the prompt into words (assuming space-separated words)
