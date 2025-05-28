@@ -157,14 +157,24 @@ def calculate_score(img_feature, all_shuffled_text_feature, M, score_name="MSP")
     elif score_name == "ECL":
         for m in range(M):
             logit = all_sorted_logit[m]
-            evidence = torch.relu(logit)  # Optionally use softplus
-            alpha = evidence + 1
-            S = torch.sum(alpha, dim=1, keepdim=True)
+            evidence = torch.relu(logit)  # or use softplus(logit)
+            alpha = evidence + 1.0
+            S = torch.sum(alpha, dim=1, keepdim=True)  # Total evidence
             probs = alpha / S
-            # Compute confidence score as negative epistemic uncertainty
-            epistemic = torch.sum((probs - probs.mean(dim=1, keepdim=True))**2, dim=1)
-            score = -epistemic  # Lower uncertainty => higher score
+
+            # Epistemic uncertainty: variance across Dirichlet components
+            epistemic = torch.sum((probs - probs.mean(dim=1, keepdim=True)) ** 2, dim=1)
+
+            # Aleatoric uncertainty: intrinsic data uncertainty
+            aleatoric = torch.sum(probs * (1 - probs) / (S + 1), dim=1)
+
+            # Combine both uncertainties (e.g., weighted sum or mean)
+            total_uncertainty = epistemic + aleatoric  # You can also weight them
+
+            # Score is negative uncertainty (higher confidence => higher score)
+            score = -total_uncertainty
             total_score += score
+
         total_score = total_score / M
 
     else:
