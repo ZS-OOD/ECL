@@ -86,36 +86,23 @@ def set_ood_dataset_cifar_100(out_dataset, transform):
     if out_dataset == 'SVHN':
         testsetout = SVHN(root=os.path.join(root, 'svhn'), split='test', transform=transform,download=True)
                                 
-    elif out_dataset == 'dtd':
-        testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'dtd', 'images'), transform=transform)
-        # should rule out four classes when ImageNet-1k is ID data, img_list is provided by vim
-
+    elif out_dataset == 'texture':
+        testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'texture', 'images'), transform=transform)     
     else:
         testsetout = torchvision.datasets.ImageFolder(root = os.path.join(root, out_dataset), transform=transform)
     return testsetout
 
+def set_ood_dataset_cifar_10(out_dataset, transform):
 
-# get all ood datasets for ImagNet-100 and ImageNet-1k
-def set_ood_dataset_imagenet_1k(out_dataset, transform):
-    
-    if out_dataset == 'openimage_o':
-        data_root = "/home/xixi/Downloads/vim-master/data/openimage_o"
-        img_list = "/home/xixi/Downloads/vim-master/datalists/openimage_o.txt"
-        testsetout =  ImageFilelist(data_root, img_list, transform)
+    root = "~/datasets/small_OOD_dataset"
 
+    if out_dataset == 'SVHN':
+        testsetout = SVHN(root=os.path.join(root, 'svhn'), split='test', transform=transform,download=True)
+                                
     elif out_dataset == 'texture':
-        data_root = "/home/xixi/Downloads/vim-master/data/texture/dtd/images"
-        img_list = "/home/xixi/Downloads/vim-master/datalists/texture.txt"
-        testsetout =  ImageFilelist(data_root, img_list, transform)
-                           
-    elif out_dataset == 'inaturalist':
-        data_root = "/home/xixi/Downloads/vim-master/data/inaturalist"
-        testsetout = torchvision.datasets.ImageFolder(root=data_root, transform=transform)
-             
-    elif out_dataset == 'imagenet_o':
-        data_root = "/home/xixi/Downloads/vim-master/data/imagenet_o"
-        testsetout = torchvision.datasets.ImageFolder(root=data_root, transform=transform)
-                                     
+        testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'texture', 'images'), transform=transform)    
+    else:
+        testsetout = torchvision.datasets.ImageFolder(root = os.path.join(root, out_dataset), transform=transform)
     return testsetout
 
 def get_text_features(shuffled_text_inputs, M=1):
@@ -233,24 +220,5 @@ def auc(ind_conf, ood_conf):
     aupr_out = metrics.auc(recall_out, precision_out)
 
     return auroc, aupr_in, aupr_out
- 
-
-
-def obtain_ImageNet100_classes():
-    loc=os.path.join('data', 'ImageNet100')
-    # sort by values
-    with open(os.path.join(loc, 'class_list.txt')) as f:
-        class_set = [line.strip() for line in f.readlines()]
-
-    class_name_set = []
-    with open('data/ImageNet/imagenet_class_index.json') as file: 
-        class_index_raw = json.load(file)
-        class_index = {cid: class_name for cid, class_name in class_index_raw.values()}
-        class_name_set = [class_index[c] for c in class_set]
-    class_name_set = [x.replace('_', ' ') for x in class_name_set]
-
-    return class_name_set
-
-
  
  
