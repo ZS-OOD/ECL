@@ -107,6 +107,7 @@ def get_text_features(shuffled_text_inputs, M=1):
                 features = model.encode_text(shuffled_text_inputs[m].to(device))
                 all_features.append(features)
     return  all_features
+	
 # # calculate ID score 
 def calculate_score(img_feature, all_shuffled_text_feature, M, score_name="MSP"):
     img_feature /= img_feature.norm(dim=-1, keepdim=True)
