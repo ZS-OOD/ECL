@@ -82,7 +82,9 @@ def main():
         scores_output_file = f'scores/{model_name}_{score_name}_temperature_{temp}_augmentations_{M}_cifar100_{dataset}_results.csv'
         mmcv.mkdir_or_exist(dirname(scores_output_file))
         df_scores.to_csv(scores_output_file)
-    
+        # Store uncertainty values for ID/OOD
+        uncertainty_output_file = f'scores/{model_name}_{score_name}_uncertainty_values_{dataset}.npy'
+        np.save(uncertainty_output_file, total_score.cpu().numpy())
         auroc = auc(id_score, ood_score)[0]
         fpr, _ = fpr_recall(id_score , ood_score, recall_level_default ) 
         result.append(
