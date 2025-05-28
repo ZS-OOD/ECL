@@ -17,7 +17,7 @@ import numpy as np
 import sklearn.metrics as sk
 from sklearn import metrics
 import pandas as pd
-from utils import seed_torch, get_text_features, calculate_score, shuffle_prompt, auc, num_fp_at_recall, fpr_recall
+from utils import seed_torch, get_text_features, calculate_score, EvidentialHead, compute_uncertainty_score, shuffle_prompt, auc, num_fp_at_recall, fpr_recall
 import random
 import argparse
 
