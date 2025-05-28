@@ -25,14 +25,14 @@ import argparse
  
 def parse_args():
     parser = argparse.ArgumentParser(description='OOD detection on CIFAR100 ')
-    parser.add_argument('--model_name', default = 'ViT-B/16', type=str, choices = ['ViT-B/16', 'ViT-B/32','ViT-L/14', 'RN50', 'RN101'],
+    parser.add_argument('--model_name', default = 'ViT-B/32', type=str, choices = ['ViT-B/16', 'ViT-B/32','ViT-L/14', 'RN50', 'RN101'],
                         help='name of pre-trained CLIP')
     parser.add_argument('--shuffle', action='store_true',
                             help='shuffling the text prompt')
     parser.add_argument('--M', default=1, type=int, help='number of text augmentations')
     parser.add_argument('--temp', default=0.01, type=float,
                         help='tempertature scaling')
-    parser.add_argument('--score_name', default = 'MSP', type=str, choices = ['MSP', 'Max-Logit','Energy','GEN'],
+    parser.add_argument('--score_name', default = 'MSP', type=str, choices = ['MSP', 'Max-Logit','Energy','GEN', 'ECL'],
                         help='score functions')
     return  parser.parse_args()
 
@@ -70,7 +70,7 @@ def main():
     
     id_score = calculate_score(id_image_features, id_text_features, M, score_name) 
     # get all ood datasets for CIFAR100
-    out_datasets = ['SVHN','iSUN', 'places365', 'dtd', 'LSUN']
+    out_datasets = ['SVHN', 'texture', 'LSUN', 'iSUN', 'places365']
     # prepare ood datasets
     result = []
     for dataset in out_datasets:
