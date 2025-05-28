@@ -4,6 +4,8 @@ import sklearn.metrics as sk
 from sklearn import metrics
 import pandas as pd
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 import torch.utils.data as data
 from PIL import Image
 import os
@@ -31,6 +33,17 @@ def default_flist_reader(flist):
 			imlist.append( (impath, int(imlabel)) )
 
 	return imlist
+
+class EvidentialHead(nn.Module):
+    def __init__(self, in_features, num_classes):
+        super(EvidentialHead, self).__init__()
+        self.fc = nn.Linear(in_features, num_classes)
+
+    def forward(self, x):
+        logits = self.fc(x)
+        evidence = F.softplus(logits)  # Ensure non-negative evidence
+        alpha = evidence + 1  # Dirichlet parameters
+        return alpha
 
 class ImageFilelist(data.Dataset):
 	def __init__(self, root, flist, transform=None, target_transform=None,
@@ -181,6 +194,41 @@ def calculate_score(img_feature, all_shuffled_text_feature, M, score_name="MSP")
         raise ValueError("Score name is incorrect")
 
     return total_score.cpu().numpy()
+
+def evidential_loss(alpha, target, coeff=1.0):
+    S = torch.sum(alpha, dim=1, keepdim=True)
+    probs = alpha / S
+
+    mse = torch.sum((target - probs) ** 2, dim=1, keepdim=True)
+    var = torch.sum(probs * (1 - probs) / (S + 1), dim=1, keepdim=True)
+
+    return torch.mean(mse + var) * coeff
+	
+def kl_dirichlet_loss(alpha, num_classes):
+    beta = torch.ones_like(alpha)
+    S_alpha = torch.sum(alpha, dim=1, keepdim=True)
+    S_beta = torch.sum(beta, dim=1, keepdim=True)
+    
+    log_term = torch.lgamma(S_alpha) - torch.sum(torch.lgamma(alpha), dim=1, keepdim=True)
+    log_term -= torch.lgamma(S_beta) - torch.sum(torch.lgamma(beta), dim=1, keepdim=True)
+    kl = log_term + torch.sum((alpha - beta) * (torch.digamma(alpha) - torch.digamma(S_alpha)), dim=1, keepdim=True)
+    
+    return torch.mean(kl)
+
+def contrapositive_loss(fx, pos_embed, neg_embeds, tau=0.5):
+    pos_sim = F.cosine_similarity(fx, pos_embed)
+    loss = 0
+    for neg in neg_embeds:
+        neg_sim = F.cosine_similarity(fx, neg)
+        loss += F.relu(tau + neg_sim - pos_sim)
+    return loss.mean()
+	
+def compute_uncertainties(alpha):
+    S = torch.sum(alpha, dim=1, keepdim=True)
+    probs = alpha / S
+    epistemic = torch.sum((probs - probs.mean(dim=1, keepdim=True)) ** 2, dim=1)
+    aleatoric = torch.sum(probs * (1 - probs) / (S + 1), dim=1)
+    return epistemic, aleatoric
 
 def shuffle_prompt(prompt, class_name):
     # Tokenize the prompt into words (assuming space-separated words)
