@@ -33,14 +33,10 @@ def SVD_text_embeddings(dataset, model_name, device):
             text = f"a photo of a {c}"
             text_inputs.append(clip.tokenize(text))
          
-    elif dataset =="ImageNet-100":
-        imagenet_100_classes = obtain_ImageNet100_classes()
-        for c in imagenet_100_classes:
-            text = f"a photo of a {c}"
-            text_inputs.append(clip.tokenize(text))
-
-    elif dataset =="ImageNet-1k":
-        for c in imagenet_classes:
+    elif dataset == "CIFAR-10":
+        
+        cifar10_test = CIFAR10(root=os.path.expanduser("~/.cache"), download=True, train=False, transform=preprocess)
+        for c in cifar10_test.classes:
             text = f"a photo of a {c}"
             text_inputs.append(clip.tokenize(text))
     else:
@@ -94,15 +90,10 @@ def SVD_text_embeddings_singular(dataset, model_name, device):
             text = f"a photo of a {c}"
             text_inputs.append(clip.tokenize(text))
          
-    elif dataset =="ImageNet-100":
-        imagenet_100_classes = obtain_ImageNet100_classes()
-        #print(imagenet_100_classes)
-        for c in imagenet_100_classes:
-            text = f"a photo of a {c}"
-            text_inputs.append(clip.tokenize(text))
-
-    elif dataset =="ImageNet-1k":
-        for c in imagenet_classes:
+     if dataset == "CIFAR-10":
+        
+        cifar10_test = CIFAR10(root=os.path.expanduser("~/.cache"), download=True, train=False, transform=preprocess)
+        for c in cifar10_test.classes:
             text = f"a photo of a {c}"
             text_inputs.append(clip.tokenize(text))
     else:
@@ -128,15 +119,10 @@ def SVD_text_embeddings_rank(dataset, model_name, device):
             text = f"a photo of a {c}"
             text_inputs.append(clip.tokenize(text))
          
-    elif dataset =="ImageNet-100":
-        imagenet_100_classes = obtain_ImageNet100_classes()
+   elif dataset == "CIFAR-10":
         
-        for c in imagenet_100_classes:
-            text = f"a photo of a {c}"
-            text_inputs.append(clip.tokenize(text))
-
-    elif dataset =="ImageNet-1k":
-        for c in imagenet_classes:
+        cifar10_test = CIFAR10(root=os.path.expanduser("~/.cache"), download=True, train=False, transform=preprocess)
+        for c in cifar10_test.classes:
             text = f"a photo of a {c}"
             text_inputs.append(clip.tokenize(text))
     else:
@@ -153,7 +139,7 @@ def SVD_text_embeddings_rank(dataset, model_name, device):
 
 
 models = ["RN50","ViT-B/16","ViT-B/32", "ViT-L/14","RN101"]
-datasets = [ "ImageNet-1k"]#"CIFAR-100" ,"ImageNet-100", "ImageNet-1k"]  
+datasets = [ "CIFAR-100"]#, "CIFAR-10"]  
 device = "cuda:0"
 Singular_Visualization =False
 Rank_Visualization = True
