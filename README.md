@@ -1,7 +1,7 @@
  
-#  Learning by Exclusion: Evidential Contrapositive Learning for Zero-Shot Out-of-Distribution Detection
+#  LEARNING BY EXCLUSION: AN EVIDENTIAL CONTRAPOSITIVE FRAMEWORK FOR ZERO-SHOT OOD DETECTION
 
-This is the offical repository for our [ECL]
+This is the offical repository for our [ECF]
 
 
 ### Illustration
@@ -10,7 +10,7 @@ This is the offical repository for our [ECL]
 
 ## Data Preparation
 
-We consider the following (in-distribution) datasets: CIFAR-10, CIFAR-100
+We consider the following (in-distribution) datasets: CIFAR-10, CIFAR-100, and ImageNet-1K
 
 **Small-scale OOD datasets** For small-scale ID (e.g. CIFAR-100), we use SVHN, Textures (dtd), Places365, LSUN and iSUN. 
 
